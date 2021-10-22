@@ -1,0 +1,41 @@
+pipeline {
+
+	agent any
+	environment {
+		NEW_VERSION='0.0.1'
+		//SERVER_CREDENTIALS=credentials('server-credentials')
+	}
+	stages {
+	
+		stage("build") {
+		
+			steps {
+				echo 'building the application...'	
+				echo "building version ${NEW_VERSION}"		
+			}
+		}
+		
+		stage("test") {
+			when {
+				expression {
+					BRANCH_NAME=='dev' || BRANCH_NAME=='master'
+				}
+			}
+			steps {
+				echo 'test the application...'	
+			}
+		}
+		
+		stage("deploy") {
+		
+			steps {
+				echo 'deploy the application...'	
+				withCredentials([
+					usernamePassword(credentialsId: 'server-credentials', usernameVariable: USER, passwordVariable: PWD)
+				]) {
+					echo "username ${USER} with password ${PWD}"
+				}
+			}
+		}
+	}
+}

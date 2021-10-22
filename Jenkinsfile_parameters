@@ -1,0 +1,37 @@
+pipeline {
+
+	agent any
+	parameters {
+		//string(name: 'VERSION', defaultValue: '', description: 'version to deploy on prod')
+		choice(name: 'VERSION', choices: ['1.1.0', '1.1.1', '1.1.2'], description: 'version to deploy on prod')
+		booleanParam(name: 'executeTests', defaultValue: true, description: '')
+	}
+	stages {
+	
+		stage("build") {
+		
+			steps {
+				echo 'building the application...'			
+			}
+		}
+		
+		stage("test") {
+			when {
+				expression {
+					params.executeTests
+				}
+			}
+			steps {
+				echo 'test the application...'	
+			}
+		}
+		
+		stage("deploy") {
+		
+			steps {
+				echo 'deploy the application...'	
+				echo "deploy version ${params.VERSION}"
+			}
+		}
+	}
+}
